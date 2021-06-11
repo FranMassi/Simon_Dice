@@ -3,16 +3,18 @@ const violeta = document.getElementById("violeta");
 const naranja = document.getElementById("naranja");
 const verde = document.getElementById("verde");
 const btnEmpezar = document.getElementById("btnEmpezar");
+const ultimoNivel = 10;
 
 //la clase juego tendrá toda la logica del juego
 class Game {
     constructor(){
         this.iniciar()
         this.generarSecuencia()
-        this.siguienteNivel()
+        setTimeout(this.siguienteNivel, 1000)
     }
 
     iniciar(){
+        this.siguienteNivel = this.siguienteNivel.bind(this);
         btnEmpezar.classList.add('hide');
         this.level = 1;
         this.colores = {
@@ -24,12 +26,13 @@ class Game {
     }
 
     generarSecuencia(){
-        this.secuencia = new Array(10).fill(0).map(n => Math.floor(Math.random() * 4));
+        this.secuencia = new Array(ultimoNivel).fill(0).map(n => Math.floor(Math.random() * 4));
     }
 
     siguienteNivel(){
-        this.iluminarSecuencia()
-        this.agregarEventosClick()
+        this.subnivel = 0;
+        this.iluminarSecuencia();
+        this.agregarEventosClick();
     }
 
     numberToColor(numero){
@@ -45,6 +48,20 @@ class Game {
         }
     }
 
+
+    colorToNumber(color){
+        switch (color) {
+            case "violeta":
+                return 0
+            case "celeste":
+                return 1
+            case "verde":
+                return 2
+            case "naranja":
+                return 3
+        }
+    }
+
     iluminarSecuencia(){
         for(let i = 0; i < this.level; i++){
             let color = this.numberToColor(this.secuencia[i]);
@@ -54,7 +71,7 @@ class Game {
 
     lightColor(color){
         this.colores[color].classList.add('light');
-        setTimeout(() => this.turnOffColor(color), 1000)
+        setTimeout(() => this.turnOffColor(color), 500)
     }
 
     turnOffColor(color){
@@ -70,12 +87,35 @@ class Game {
         this.colores.naranja.addEventListener("click", this.elegirColor.bind(_this))
     }
 
+    eliminarEventosCLick(){
+        var _this = this
+        this.colores.celeste.removeEventListener("click", this.elegirColor.bind(_this));
+        this.colores.violeta.removeEventListener("click", this.elegirColor.bind(_this))
+        this.colores.verde.removeEventListener("click", this.elegirColor.bind(_this))
+        this.colores.naranja.removeEventListener("click", this.elegirColor.bind(_this))
+    }
+
     elegirColor(ev){
-        console.log(ev)
+        let nombreColor = ev.target.dataset.color;
+        let numeroColor = this.colorToNumber(nombreColor);
+        this.lightColor(nombreColor);
+        if (numeroColor === this.secuencia[this.subnivel]){
+            this.subnivel++
+            if(this.subnivel === this.level) {
+                this.level++
+                this.eliminarEventosCLick();
+                if (this.level === (ultimoNivel + 1)){
+
+                }else {
+                    setTimeout(this.siguienteNivel, 1500);
+                } 
+            }
+        }else {
+
+        }
     }
 }
 
 function empezarJuego (){
     window.game = new Game();
 }
-
