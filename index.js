@@ -5,17 +5,22 @@ const verde = document.getElementById("verde");
 const btnEmpezar = document.getElementById("btnEmpezar");
 const ultimoNivel = 10;
 
+
 //la clase juego tendrá toda la logica del juego
 class Game {
     constructor(){
+        this.iniciar = this.iniciar().bind(this)
         this.iniciar()
         this.generarSecuencia()
         setTimeout(this.siguienteNivel, 1000)
     }
 
     iniciar(){
+        this.elegirColor = this.elegirColor.bind(this)
         this.siguienteNivel = this.siguienteNivel.bind(this);
-        btnEmpezar.classList.add('hide');
+        //toggle es un switch de predido y apagado, es como si fuera un botón
+        // this.toggleBtnEmpezar()
+        btnEmpezar.classList.add('hide')
         this.level = 1;
         this.colores = {
             celeste,
@@ -24,6 +29,14 @@ class Game {
             verde
         }
     }
+
+    // toggleBtnEmpezar(){
+    //     if (btnEmpezar.classList.contains('hide')){
+    //         btnEmpezar.classList.remove('hide')
+    //     } else {
+    //         btnEmpezar.classList.add('hide')
+    //     }
+    // }
 
     generarSecuencia(){
         this.secuencia = new Array(ultimoNivel).fill(0).map(n => Math.floor(Math.random() * 4));
@@ -47,7 +60,6 @@ class Game {
                 return "naranja"
         }
     }
-
 
     colorToNumber(color){
         switch (color) {
@@ -81,18 +93,18 @@ class Game {
     agregarEventosClick(){
         //en este caso el this apunta al botón cuando debemos hacer que apunte al juego por eso se modifica el contexto al cual hace referencia "this"
         var _this = this
-        this.colores.celeste.addEventListener("click", this.elegirColor.bind(_this));
-        this.colores.violeta.addEventListener("click", this.elegirColor.bind(_this))
-        this.colores.verde.addEventListener("click", this.elegirColor.bind(_this))
-        this.colores.naranja.addEventListener("click", this.elegirColor.bind(_this))
+        this.colores.celeste.addEventListener("click", this.elegirColor);
+        this.colores.violeta.addEventListener("click", this.elegirColor)
+        this.colores.verde.addEventListener("click", this.elegirColor)
+        this.colores.naranja.addEventListener("click", this.elegirColor)
     }
 
     eliminarEventosCLick(){
         var _this = this
-        this.colores.celeste.removeEventListener("click", this.elegirColor.bind(_this));
-        this.colores.violeta.removeEventListener("click", this.elegirColor.bind(_this))
-        this.colores.verde.removeEventListener("click", this.elegirColor.bind(_this))
-        this.colores.naranja.removeEventListener("click", this.elegirColor.bind(_this))
+        this.colores.celeste.removeEventListener("click", this.elegirColor);
+        this.colores.violeta.removeEventListener("click", this.elegirColor)
+        this.colores.verde.removeEventListener("click", this.elegirColor)
+        this.colores.naranja.removeEventListener("click", this.elegirColor)
     }
 
     elegirColor(ev){
@@ -105,17 +117,29 @@ class Game {
                 this.level++
                 this.eliminarEventosCLick();
                 if (this.level === (ultimoNivel + 1)){
-
+                    this.gano();
                 }else {
                     setTimeout(this.siguienteNivel, 1500);
                 } 
             }
         }else {
-
+            this.perdio()
         }
     }
+
+    gano(){
+       swal("You Win!!!")
+        .then(this.iniciar)
+    }
+
+    perdio(){
+        swal("You Lose!!!")
+        .then(() => {
+            this.eliminarEventosCLick();
+            this.iniciar();
+    })
 }
 
-function empezarJuego (){
-    window.game = new Game();
+function empezar() {
+    window.juego = new Juego()
 }
